@@ -1,12 +1,15 @@
 import os
 
 import json
-import utils
+import pandas as pd
+from api import utils
 from flask import Flask, Response, abort
 
 app = Flask(__name__)
 
-@app.route('/files')
+data = pd.read_csv('data/data.csv')
+
+@app.route('/update')
 def item_list():
 
     # Create this
@@ -15,7 +18,7 @@ def item_list():
     return response
 
 
-@app.route('/files/<int:pk>')
+@app.route('/get/<int:pk>')
 def item_score(pk):
 
     # Create this
@@ -26,6 +29,10 @@ def item_score(pk):
 
     content = json.dumps(score)
     return content, 200, {'Content-Type': 'application/json'}
+
+@app.route('/')
+def sample():
+    return 'Welcome to this sample app :)'
 
 
 @app.errorhandler(404)
