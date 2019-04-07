@@ -1,4 +1,7 @@
 import requests
+import json
+import os
+import re
 
 class Client:
 
@@ -8,16 +11,33 @@ class Client:
         if 'local' in host:
             self.host = '127.0.0.1'
         self.base_url = 'http://' + self.host + ':' + self.port
+        self.json_pattern = re.compile(r'.*\.jsonl?$')
 
     def get_score(self, pk):
         url = self.base_url + '/get/' + str(pk)
-        response = requests.post(url=url)
-        pass
+        response = requests.get(url=url)
+        response.raise_for_status()
+
+        return response.json()
 
     def update_data(self, dir):
-        pass
+        url = self.base_url + '/update'
+        filenames = [s for s in os.listdir(dir) if self.json_pattern.match(s)]
 
-    def foo(self):
+        for filename in filenames:
+            with open(filename, 'r') as f:
+                lines = [line.strip() for line in f.readlines()]
+                for line in lines:
+                    self._update_line(url, line)
+        
+    def _update_line(self, url, line):
+        response = requests.post(url=url, json=line)
+        response.raise_for_status()
+
+        return response.json()
+
+    def _foo(self):
         url = self.base_url + '/'
         response = requests.get(url)
+
         return response.json()
