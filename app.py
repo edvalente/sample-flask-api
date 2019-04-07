@@ -1,34 +1,37 @@
 import os
-
 import json
 import pandas as pd
-from api import utils
-from flask import Flask, Response, abort
+from flask import Flask, Response, abort, request
 
 app = Flask(__name__)
 
-data = pd.read_csv('data/data.csv')
+# data = pd.read_csv('data/data.csv')
+data = {
+    '123': 100,
+    '321': 1,
+    '50': 98
+}
 
 @app.route('/update')
-def item_list():
+def item_update():
+    if not request.json:
+        abort(400)
+    pk = request.json['pk']
+    score = request.json['score']
+    data[str(pk)] = int(score)
 
-    # Create this
-    response = Response(
-        json.dumps('fixme'), status=200, mimetype='application/json')
-    return response
+    return Response("pk " + str(pk) + " updated", status=200)
 
 
 @app.route('/get/<int:pk>')
 def item_score(pk):
-
-    # Create this
-    score = utils.get_score(pk)
+    score = data[str(pk)]
 
     if score is None:
         abort(404)
 
-    content = json.dumps(score)
-    return content, 200, {'Content-Type': 'application/json'}
+    content = json.dumps({ 'pk': str(pk), 'score': str(score) })
+    return Response(content, status=200, mimetype='applycation/json')
 
 @app.route('/')
 def sample():
