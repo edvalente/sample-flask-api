@@ -16,13 +16,18 @@ class Client:
     def get_score(self, pk):
         url = self.base_url + '/get/' + str(pk)
         response = requests.get(url=url)
-        response.raise_for_status()
+        # response.raise_for_status()
+        
+        if response.status_code != 200:
+            return None
+            
+        score = int(response.json()['score'])
 
-        return response.json()
+        return score
 
     def update_data(self, dir):
         url = self.base_url + '/update'
-        filenames = [s for s in os.listdir(dir) if self.json_pattern.match(s)]
+        filenames = [dir + '/' + s for s in os.listdir(dir) if self.json_pattern.match(s)]
 
         for filename in filenames:
             with open(filename, 'r') as f:
