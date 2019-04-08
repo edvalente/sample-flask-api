@@ -10,7 +10,7 @@ data = {
     '50': 98
 }
 
-@app.route('/update')
+@app.route('/update', methods=['POST'])
 def item_update():
     if not request.json:
         abort(400)
@@ -18,10 +18,10 @@ def item_update():
     score = request.json['score']
     data[str(pk)] = int(score)
 
-    return Response("pk " + str(pk) + " updated", status=200)
+    return Response("pk " + str(pk) + " updated with score " + str(score), status=200)
 
 
-@app.route('/get/<int:pk>')
+@app.route('/get/<int:pk>', methods=['GET'])
 def item_score(pk):
     if str(pk) in data.keys():
         score = data[str(pk)]
@@ -34,7 +34,7 @@ def item_score(pk):
     content = json.dumps({ 'pk': str(pk), 'score': str(score) })
     return Response(content, status=200, mimetype='application/json')
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def sample():
     return 'Welcome to this sample app :)'
 
