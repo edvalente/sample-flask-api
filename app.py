@@ -1,11 +1,9 @@
 import os
 import json
-import pandas as pd
 from flask import Flask, Response, abort, request
 
 app = Flask(__name__)
 
-# data = pd.read_csv('data/data.csv')
 data = {
     '123': 100,
     '321': 1,
@@ -25,13 +23,16 @@ def item_update():
 
 @app.route('/get/<int:pk>')
 def item_score(pk):
-    score = data[str(pk)]
+    if str(pk) in data.keys():
+        score = data[str(pk)]
+    else:
+        return Response('pk ' + str(pk) + ' not found', status=400)
 
     if score is None:
         abort(404)
 
     content = json.dumps({ 'pk': str(pk), 'score': str(score) })
-    return Response(content, status=200, mimetype='applycation/json')
+    return Response(content, status=200, mimetype='application/json')
 
 @app.route('/')
 def sample():
