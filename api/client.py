@@ -27,22 +27,27 @@ class Client:
 
     def update_data(self, dir):
         url = self.base_url + '/update'
+        lines = self._get_lines(dir)
+        for line in lines:
+            self._update_line(url, line)
+
+        return None
+
+    def _get_lines(self, dir):
         filenames = [dir + '/' + s for s in os.listdir(dir) if self.json_pattern.match(s)]
 
+        if filenames == []:
+            raise Exception('Directory is empty.')
+
+        lines = []
         for filename in filenames:
             with open(filename, 'r') as f:
-                lines = [line.strip() for line in f.readlines()]
-                for line in lines:
-                    self._update_line(url, line)
+                lines += [line.strip() for line in f.readlines()]
+        
+        return lines
         
     def _update_line(self, url, line):
-        response = requests.post(url=url, json=line)
+        response = requests.post(url=url, json=json.loads(line))
         response.raise_for_status()
-
-        return response.json()
-
-    def _foo(self):
-        url = self.base_url + '/'
-        response = requests.get(url)
-
-        return response.json()
+        
+        return None
