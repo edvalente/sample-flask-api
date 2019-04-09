@@ -20,7 +20,6 @@ def item_update():
 
     return Response("pk " + str(pk) + " updated with score " + str(score), status=200)
 
-
 @app.route('/get/<int:pk>', methods=['GET'])
 def item_score(pk):
     if str(pk) in data.keys():
@@ -37,7 +36,6 @@ def item_score(pk):
 @app.route('/', methods=['GET'])
 def sample():
     return 'Welcome to this sample app :)'
-
 
 @app.errorhandler(404)
 def not_found(e):
