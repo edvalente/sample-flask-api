@@ -2,6 +2,7 @@ import requests
 import json
 import os
 import re
+from warnings import warn
 
 class Client:
 
@@ -19,6 +20,7 @@ class Client:
         # response.raise_for_status()
         
         if response.status_code != 200:
+            warn('pk not found')
             return None
             
         score = int(response.json()['score'])
@@ -28,9 +30,15 @@ class Client:
     def update_data(self, dir):
         url = self.base_url + '/update'
         lines = self._get_lines(dir)
+        if len(lines) == 0:
+            warn('No new data in this directory.')
+            return None
+
         for line in lines:
             self._update_line(url, line)
 
+        message = str(len(lines)) + ' lines have been updated.'
+        print(message)
         return None
 
     def _get_lines(self, dir):
